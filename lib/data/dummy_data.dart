@@ -29,3 +29,10 @@ const dummyProjects = <Project>[
     techStack: ['Flutter', 'MQTT', 'Cloud'],
   ),
 ];
+
+Project? findProjectById(String id) {
+  for (final project in dummyProjects) {
+    if (project.id == id) return project;
+  }
+  return null; // tidak ditemukan
+}
