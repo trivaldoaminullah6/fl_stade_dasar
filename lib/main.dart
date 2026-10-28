@@ -42,8 +42,32 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
+  void _showSnack(String message, {SnackBarAction? action}) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar() // hindari Snackbar menumpuk
+      ..showSnackBar(
+        SnackBar(
+          content: Text(message),
+          behavior: SnackBarBehavior.floating,
+          action: action,
+        ),
+      );
+  }
+
   void _onFollowPressed() {
-    _setFollowing(!_isFollowing);
+    if (_isFollowing) {
+      _setFollowing(false);
+      _showSnack('Kamu berhenti mengikuti $_name');
+    } else {
+      _setFollowing(true);
+      _showSnack(
+        'Kamu mulai mengikuti $_name',
+        action: SnackBarAction(
+          label: 'BATAL',
+          onPressed: () => _setFollowing(false), // Undo
+        ),
+      );
+    }
   }
 
   @override
