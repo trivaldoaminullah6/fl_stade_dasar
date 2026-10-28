@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../app/app_routes.dart';
 
@@ -18,11 +19,7 @@ class NotFoundPage extends StatelessWidget {
             const Text('Halaman tidak ditemukan'),
             const SizedBox(height: 16),
             FilledButton(
-              onPressed: () => Navigator.pushNamedAndRemoveUntil(
-                context,
-                AppRoutes.profile,
-                (route) => false,
-              ),
+              onPressed: () => context.go(AppRoutes.profile),
               child: const Text('Ke Beranda'),
             ),
           ],

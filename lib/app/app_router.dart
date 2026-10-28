@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
+import '../data/dummy_data.dart';
 import '../models/models.dart';
 import '../pages/edit_profile_page.dart';
 import '../pages/not_found_page.dart';
@@ -8,38 +9,38 @@ import '../pages/project_detail_page.dart';
 import '../pages/splash_page.dart';
 import 'app_routes.dart';
 
-class AppRouter {
-  AppRouter._();
-
-  static Route<dynamic> onGenerateRoute(RouteSettings settings) {
-    final args = settings.arguments;
-
-    switch (settings.name) {
-      case AppRoutes.splash:
-        return _build(const SplashPage(), settings);
-
-      case AppRoutes.profile:
-        return _build(const ProfilePage(), settings);
-
-      case AppRoutes.projectDetail:
-        // Periksa tipe arguments sebelum dipakai
-        if (args is Project) {
-          return _build(ProjectDetailPage(project: args), settings);
-        }
-        return _build(const NotFoundPage(), settings);
-
-      case AppRoutes.editProfile:
-        if (args is Profile) {
-          return _build(EditProfilePage(profile: args), settings);
-        }
-        return _build(const NotFoundPage(), settings);
-
-      default:
-        return _build(const NotFoundPage(), settings);
-    }
-  }
-
-  // Pembungkus: `settings` wajib diteruskan agar nama route tercatat
-  static MaterialPageRoute<dynamic> _build(Widget page, RouteSettings settings) =>
-      MaterialPageRoute(builder: (_) => page, settings: settings);
-}
+final GoRouter appRouter = GoRouter(
+  initialLocation: AppRoutes.splash,
+  debugLogDiagnostics: true, // cetak log navigasi di Debug Console
+  errorBuilder: (context, state) => const NotFoundPage(), // pengganti halaman 404
+  routes: [
+    GoRoute(
+      path: AppRoutes.splash,
+      builder: (context, state) => const SplashPage(),
+    ),
+    GoRoute(
+      path: AppRoutes.profile,
+      builder: (context, state) => const ProfilePage(),
+      routes: [
+        // Route anak: path RELATIF (tanpa "/" di depan)
+        GoRoute(
+          path: 'projects/:id',
+          builder: (context, state) {
+            final id = state.pathParameters['id']!;
+            final project = findProjectById(id);
+            if (project == null) return const NotFoundPage();
+            return ProjectDetailPage(project: project);
+          },
+        ),
+        GoRoute(
+          path: 'edit',
+          builder: (context, state) {
+            final profile = state.extra; // objek yang dikirim lewat `extra`
+            if (profile is! Profile) return const NotFoundPage();
+            return EditProfilePage(profile: profile);
+          },
+        ),
+      ],
+    ),
+  ],
+);
