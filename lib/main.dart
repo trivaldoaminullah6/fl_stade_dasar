@@ -55,20 +55,54 @@ class _ProfilePageState extends State<ProfilePage> {
       );
   }
 
-  void _onFollowPressed() {
-    if (_isFollowing) {
-      _setFollowing(false);
-      _showSnack('Kamu berhenti mengikuti $_name');
-    } else {
+  Future<bool> _showConfirmDialog({
+    required String title,
+    required String message,
+    required String confirmLabel,
+  }) async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(title),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Batal'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: Text(confirmLabel),
+          ),
+        ],
+      ),
+    );
+    return result ?? false; // null = dialog ditutup dengan tap di luar
+  }
+
+  Future<void> _onFollowPressed() async {
+    if (!_isFollowing) {
       _setFollowing(true);
       _showSnack(
         'Kamu mulai mengikuti $_name',
         action: SnackBarAction(
           label: 'BATAL',
-          onPressed: () => _setFollowing(false), // Undo
+          onPressed: () => _setFollowing(false),
         ),
       );
+      return;
     }
+
+    final confirmed = await _showConfirmDialog(
+      title: 'Berhenti mengikuti?',
+      message: 'Kamu tidak akan lagi melihat pembaruan dari $_name.',
+      confirmLabel: 'Berhenti',
+    );
+
+    if (!confirmed || !mounted) return; // wajib dicek setelah await
+
+    _setFollowing(false);
+    _showSnack('Kamu berhenti mengikuti $_name');
   }
 
   @override
