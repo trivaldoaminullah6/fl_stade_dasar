@@ -30,6 +30,22 @@ class _ProfilePageState extends State<ProfilePage> {
       'Suka membangun aplikasi mobile yang sederhana, rapi, dan berguna. '
       'Sedang mengerjakan proyek akhir semester bertema kartu profil digital.';
 
+  bool _isFollowing = false;
+  int _followers = 1200;
+
+  /// Mengatur status ikuti ke nilai tertentu (bukan sekadar toggle).
+  void _setFollowing(bool value) {
+    if (_isFollowing == value) return; // tidak ada perubahan, abaikan
+    setState(() {
+      _isFollowing = value;
+      _followers += value ? 1 : -1;
+    });
+  }
+
+  void _onFollowPressed() {
+    _setFollowing(!_isFollowing);
+  }
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -53,25 +69,31 @@ class _ProfilePageState extends State<ProfilePage> {
                 textAlign: TextAlign.center, style: textTheme.headlineSmall),
             const Text('Mahasiswa', textAlign: TextAlign.center),
             const SizedBox(height: 16),
-            const Card(
+            Card(
               child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 16),
+                padding: const EdgeInsets.symmetric(vertical: 16),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _StatItem(label: 'Postingan', value: '48'),
-                    _StatItem(label: 'Pengikut', value: '1200'),
-                    _StatItem(label: 'Mengikuti', value: '320'),
+                    const _StatItem(label: 'Postingan', value: '48'),
+                    _StatItem(label: 'Pengikut', value: '$_followers'),
+                    const _StatItem(label: 'Mengikuti', value: '320'),
                   ],
                 ),
               ),
             ),
             const SizedBox(height: 16),
-            FilledButton.icon(
-              onPressed: () {},
-              icon: const Icon(Icons.person_add),
-              label: const Text('Ikuti'),
-            ),
+            _isFollowing
+                ? OutlinedButton.icon(
+                    onPressed: _onFollowPressed,
+                    icon: const Icon(Icons.check),
+                    label: const Text('Mengikuti'),
+                  )
+                : FilledButton.icon(
+                    onPressed: _onFollowPressed,
+                    icon: const Icon(Icons.person_add),
+                    label: const Text('Ikuti'),
+                  ),
             const SizedBox(height: 16),
             Card(
               child: Padding(
