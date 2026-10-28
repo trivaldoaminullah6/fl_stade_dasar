@@ -32,6 +32,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   bool _isFollowing = false;
   int _followers = 1200;
+  bool _isBioExpanded = false;
 
   /// Mengatur status ikuti ke nilai tertentu (bukan sekadar toggle).
   void _setFollowing(bool value) {
@@ -120,15 +121,29 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
             const SizedBox(height: 16),
             Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Tentang', style: textTheme.titleMedium),
-                    const SizedBox(height: 8),
-                    const Text(_bio),
-                  ],
+              child: InkWell(
+                borderRadius: BorderRadius.circular(12),
+                onTap: () => setState(() => _isBioExpanded = !_isBioExpanded),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Tentang', style: textTheme.titleMedium),
+                      const SizedBox(height: 8),
+                      Text(
+                        _bio,
+                        maxLines: _isBioExpanded ? null : 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        _isBioExpanded ? 'Tutup' : 'Selengkapnya',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
